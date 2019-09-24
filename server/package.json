@@ -1,0 +1,12 @@
+{
+  "name": "nagabuchi-server",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {},
+  "scripts": {
+    "start": "json-server --watch db.json  --foreignKeySuffix _id"
+  },
+  "devDependencies": {
+    "json-server": "^0.15.1"
+  }
+}
