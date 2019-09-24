@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {},
   "scripts": {
-    "start": "json-server --watch db.json  --foreignKeySuffix _id"
+    "start": "json-server --watch db.json  --foreignKeySuffix _id --port 3003"
   },
   "devDependencies": {
     "json-server": "^0.15.1"
