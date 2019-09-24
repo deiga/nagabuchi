@@ -1,9 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+import TopBar from './components/TopBar';
 
 function App() {
   return (
+    <React.Fragment>
+      <CssBaseline />
+      <TopBar />
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
@@ -20,6 +25,7 @@ function App() {
         </a>
       </header>
     </div>
+    </React.Fragment>
   );
 }
 
