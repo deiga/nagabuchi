@@ -6,6 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,11 +20,7 @@ function ListItemLink(props) {
 }
 
 function formatDateTime(start_time) {
-  return new Intl.DateTimeFormat('en-GB', {
-    year: 'numeric',
-    month: 'long',
-    day: '2-digit',
-  }).format(start_time);
+  return moment(start_time, 'DD-MM-YYYYTHH:mm').format('LLL');
 }
 
 function AppointmentList() {
@@ -33,7 +30,7 @@ function AppointmentList() {
   useEffect(() => {
     async function fetchAppointments() {
       const result = await axios(
-        'http://localhost:3003/appointments?_expand=client',
+        'http://localhost:3003/appointments?_expand=client&_sort=appointment_start&_order=asc',
       );
       setAppointments(result.data);
     }
@@ -47,9 +44,7 @@ function AppointmentList() {
           <React.Fragment key={appointment.id}>
             <ListItem alignItems="flex-start">
               <ListItemText
-                primary={`Appointment ${formatDateTime(
-                  appointment.appointment_start,
-                )}`}
+                primary={formatDateTime(appointment.appointment_start)}
                 secondary={
                   <React.Fragment>
                     <Typography
