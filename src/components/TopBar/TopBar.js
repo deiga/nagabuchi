@@ -8,9 +8,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   title: {
     flexGrow: 1,
   },
@@ -24,7 +21,7 @@ function TopBar() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Appointments
+            Appointments App
           </Typography>
         </Toolbar>
       </AppBar>
