@@ -7,6 +7,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
+import MomentUtils from '@date-io/moment';
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,13 +24,23 @@ function ListItemLink(props) {
   return <ListItem button component="a" {...props} />;
 }
 
-function formatDateTime(start_time) {
-  return moment(start_time, 'DD-MM-YYYYTHH:mm').format('LLL');
+function getMoment(time) {
+  return moment(time, 'DD-MM-YYYYTHH:mm');
+}
+
+function formatDateTime(startTime) {
+  return getMoment(startTime).format('LLL');
 }
 
 function AppointmentList() {
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const classes = useStyles();
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const handleDateChange = date => {
+    setSelectedDate(date);
+  };
 
   useEffect(() => {
     async function fetchAppointments() {
@@ -33,40 +48,77 @@ function AppointmentList() {
         'http://localhost:3003/appointments?_expand=client&_sort=appointment_start&_order=asc',
       );
       setAppointments(result.data);
+      setLoading(false);
     }
     fetchAppointments();
   }, []);
 
+  const appointmentsToRender = appointments.filter(appointment => {
+    if (selectedDate === null) return true;
+    return getMoment(appointment.appointment_start).isSame(selectedDate, 'day');
+  });
+
   return (
     <div className={classes.root}>
+      {renderDatePicker(selectedDate, handleDateChange)}
       <List component="nav" aria-label="main appointments">
-        {appointments.map(appointment => (
+        {loading && 'Loading...'}
+        {!loading &&
+          appointmentsToRender.length === 0 &&
+          'No appointments for selected date'}
+        {appointmentsToRender.map(appointment => (
           <React.Fragment key={appointment.id}>
-            <ListItem alignItems="flex-start">
-              <ListItemText
-                primary={formatDateTime(appointment.appointment_start)}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      {appointment.client.first_name +
-                        ' ' +
-                        appointment.client.last_name}
-                    </Typography>
-                    {' – ' + appointment.client.address}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+            {renderListItem(appointment, classes)}
             <Divider variant="inset" component="li" />
           </React.Fragment>
         ))}
       </List>
     </div>
+  );
+}
+
+function renderDatePicker(selectedDate, handleDateChange) {
+  return (
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <KeyboardDatePicker
+        disableToolbar
+        variant="inline"
+        format="DD.MM.YYYY"
+        margin="normal"
+        id="date-picker-inline"
+        label="Filter by starting date"
+        value={selectedDate}
+        onChange={handleDateChange}
+        KeyboardButtonProps={{
+          'aria-label': 'change date',
+        }}
+      />
+    </MuiPickersUtilsProvider>
+  );
+}
+
+function renderListItem(appointment, classes) {
+  return (
+    <ListItem alignItems="flex-start">
+      <ListItemText
+        primary={formatDateTime(appointment.appointment_start)}
+        secondary={
+          <React.Fragment>
+            <Typography
+              component="span"
+              variant="body2"
+              className={classes.inline}
+              color="textPrimary"
+            >
+              {appointment.client.first_name +
+                ' ' +
+                appointment.client.last_name}
+            </Typography>
+            {' – ' + appointment.client.address}
+          </React.Fragment>
+        }
+      />
+    </ListItem>
   );
 }
 
