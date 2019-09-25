@@ -10,6 +10,8 @@ yarn install
 yarn start
 ```
 
+Second terminal:
+
 ```bash
 yarn install
 yarn start
